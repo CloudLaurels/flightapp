@@ -1,6 +1,9 @@
 package com.example.flightstatsm2
 
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.drawable.Drawable
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -218,6 +221,13 @@ class Utils private constructor() {
 
         fun midPoint(coo1: LatLng, coo2: LatLng): LatLng {
             return LatLng((coo1.latitude + coo2.latitude) / 2, (coo1.longitude + coo2.longitude) / 2)
+        }
+
+        fun generateSmallIcon(context: Context, icon: Int): Bitmap {
+            val height = 100
+            val width = 100
+            val bitmap = BitmapFactory.decodeResource(context.resources, icon)
+            return Bitmap.createScaledBitmap(bitmap, width, height, false)
         }
     }
 

@@ -55,6 +55,7 @@ class FlightListFragment : Fragment(), FlightListRecyclerAdapter.OnItemClickList
         viewModel.isLoadingLiveData.observe(this, {
             if (it) {
                 progressBar.visibility = View.VISIBLE
+                errorText.visibility = View.INVISIBLE
             } else {
                 progressBar.visibility = View.INVISIBLE
                 if (viewModel.flightListLiveData.value == null) {

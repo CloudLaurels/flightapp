@@ -1,12 +1,18 @@
 package com.example.flightstatsm2
 
 
-import android.location.Location
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.Color
+import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.DimenRes
+import androidx.annotation.DrawableRes
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -83,23 +89,28 @@ class FlightDetailMapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMapL
     override fun onMapReady(googleMap: GoogleMap) {
         myGoogleMap = googleMap
         myGoogleMap.setOnMapLoadedCallback(this)
-        // Add a marker in Sydney and move the camera
-        //val departureAirportLocation = LatLng()
-        //val arrivalAirportLocation = LatLng()
+
+
         Log.e("Mapfragment", "Dep airport" + viewModel.getDepartureAirportCoordinates())
         Log.e("Mapfragment", "Arrival airport" + viewModel.getArrivalAirportCoordinates())
 
+        val depIcon = Utils.generateSmallIcon(context!!, R.drawable.airplane)
+        val arrIcon = Utils.generateSmallIcon(context!!, R.drawable.airplane)
 
         myGoogleMap.addMarker(
             MarkerOptions()
                 .position(depCoordinates)
                 .title("Departure airport")
+                .icon(BitmapDescriptorFactory.fromBitmap(depIcon))
+                .anchor(0.5f, 0.5f)
         )
 
         myGoogleMap.addMarker(
             MarkerOptions()
                 .position(arrCoordinates)
                 .title("Arrival airport")
+                .icon(BitmapDescriptorFactory.fromBitmap(arrIcon))
+                .anchor(0.5f, 0.5f)
         )
 
 
@@ -109,12 +120,15 @@ class FlightDetailMapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMapL
         poi.add(arrCoordinates) // to
         polyLineOptions.width(7f)
         polyLineOptions.geodesic(true)
-        //polyLineOptions.color(resources.getColor())
+        polyLineOptions.color(Color.BLUE)
         polyLineOptions.addAll(poi)
         val polyline: Polyline = myGoogleMap.addPolyline(polyLineOptions)
         polyline.isGeodesic = true
 
     }
+
+
+
 
     override fun onMapLoaded() {
         this.zoomToFit(depCoordinates, arrCoordinates)
