@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.google.android.gms.maps.model.LatLng
 import com.google.gson.Gson
 import com.google.gson.JsonArray
 import com.google.gson.JsonParser
@@ -214,7 +215,12 @@ class Utils private constructor() {
                 } else duration.append(minute).append("min").toString()
             }
         }
+
+        fun midPoint(coo1: LatLng, coo2: LatLng): LatLng {
+            return LatLng((coo1.latitude + coo2.latitude) / 2, (coo1.longitude + coo2.longitude) / 2)
+        }
     }
+
 
 
 }

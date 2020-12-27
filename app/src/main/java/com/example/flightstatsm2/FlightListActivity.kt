@@ -27,7 +27,7 @@ class FlightListActivity : AppCompatActivity() {
 
         viewModel.getSelectedFlightNameLiveData().observe(this, {
             //switch fragment
-            val newFragment: FlightDetailFragment = FlightDetailFragment.newInstance()
+            val newFragment: FlightDetailMapFragment = FlightDetailMapFragment.newInstance()
             val transaction: FragmentTransaction = supportFragmentManager.beginTransaction()
             if (isMobile) {
                 transaction.add(R.id.activityContainer, newFragment)

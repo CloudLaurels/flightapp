@@ -44,8 +44,8 @@ class RequestsManager {
                 val httpURLConnection =
                     url.openConnection() as HttpURLConnection
                 httpURLConnection.requestMethod = "GET"
-                httpURLConnection.connectTimeout = 10000
-                httpURLConnection.readTimeout = 10000
+                httpURLConnection.connectTimeout = 100000
+                httpURLConnection.readTimeout = 100000
                 Log.i(
                     "RequestManager",
                     "Request[GET]: \nURL: $finalSourceUrl\nNb Param: $c"

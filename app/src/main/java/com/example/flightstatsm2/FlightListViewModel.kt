@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -15,15 +16,42 @@ import kotlinx.coroutines.withContext
  */
 class FlightListViewModel : ViewModel(), RequestsManager.RequestListener {
 
-
+    private val airportListLiveData : MutableLiveData<List<Airport>> = MutableLiveData()
     val flightListLiveData: MutableLiveData<List<FlightModel>> = MutableLiveData()
     val isLoadingLiveData: MutableLiveData<Boolean> = MutableLiveData()
-    private val selectedFlightNameLiveData: MutableLiveData<String> = MutableLiveData()
+    private val selectedFlightLiveData: MutableLiveData<FlightModel> = MutableLiveData()
 
-    fun getSelectedFlightNameLiveData(): LiveData<String> {
-        return selectedFlightNameLiveData
+    init {
+        airportListLiveData.value = Utils.generateAirportList()
     }
 
+    fun getSelectedFlightNameLiveData(): LiveData<FlightModel> {
+        return selectedFlightLiveData
+    }
+
+    fun getDepartureAirportCoordinates(): LatLng {
+        var coordinates = LatLng(0.0, 0.0)
+        val dep = selectedFlightLiveData.value!!.estDepartureAirport
+        airportListLiveData.value!!.forEach {
+            if (it.icao == dep) {
+                coordinates = LatLng(it.lat.toDouble(), it.lon.toDouble())
+                return coordinates
+            }
+        }
+        return coordinates
+    }
+
+    fun getArrivalAirportCoordinates(): LatLng {
+        var coordinates = LatLng(0.0, 0.0)
+        val arr = selectedFlightLiveData.value!!.estArrivalAirport
+        airportListLiveData.value!!.forEach {
+            if (it.icao == arr) {
+                coordinates = LatLng(it.lat.toDouble(), it.lon.toDouble())
+                return coordinates
+            }
+        }
+        return coordinates
+    }
 
     fun search(icao: String, isArrival: Boolean, begin: Long, end: Long) {
 
@@ -48,7 +76,7 @@ class FlightListViewModel : ViewModel(), RequestsManager.RequestListener {
             //end loading
             isLoadingLiveData.value = false
             if (result == null) {
-                Log.e("Request", "problem")
+                Log.e("Request", "Empty request response")
 
             } else {
                 val flightList = Utils.getFlightListFromString(result)
@@ -78,7 +106,7 @@ class FlightListViewModel : ViewModel(), RequestsManager.RequestListener {
         TODO("Not yet implemented")
     }
 
-    fun updateSelectedFlightName(flightName: String) {
-        selectedFlightNameLiveData.value = flightName
+    fun updateSelectedFlight(flight: FlightModel) {
+        selectedFlightLiveData.value = flight
     }
 }
