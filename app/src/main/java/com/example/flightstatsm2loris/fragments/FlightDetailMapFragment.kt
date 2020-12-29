@@ -1,25 +1,28 @@
-package com.example.flightstatsm2
+package com.example.flightstatsm2loris.fragments
 
 
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
+import android.content.Intent
 import android.graphics.Color
-import android.graphics.drawable.BitmapDrawable
-import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.annotation.DimenRes
-import androidx.annotation.DrawableRes
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import com.example.flightstatsm2loris.viewmodels.FlightListViewModel
+import com.example.flightstatsm2loris.R
+import com.example.flightstatsm2loris.activities.AircraftInfoActivity
+import com.example.flightstatsm2loris.activities.FlightListActivity
+import com.example.flightstatsm2loris.utils.Utils
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.model.*
+import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.activity_main.searchButton
+import kotlinx.android.synthetic.main.fragment_flight_detail_map.*
 
 
 // TODO: Rename parameter arguments, choose names that match
@@ -50,6 +53,7 @@ class FlightDetailMapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMapL
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
         }
+
     }
 
     override fun onCreateView(
@@ -59,7 +63,7 @@ class FlightDetailMapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMapL
        val rootView: View = inflater.inflate(R.layout.fragment_flight_detail_map, container, false)
 
         viewModel = ViewModelProvider(requireActivity()).get(FlightListViewModel::class.java)
-        viewModel.getSelectedFlightNameLiveData().observe(this, {
+        viewModel.getSelectedFlightLiveData().observe(this, {
             //flight_name.text = it
         })
 
@@ -72,10 +76,18 @@ class FlightDetailMapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMapL
 
         mMapView.getMapAsync(this)
 
+
+
         // Inflate the layout for this fragment
         return rootView
         //return inflater.inflate(R.layout.fragment_flight_detail_map, container, false)
     }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        button.setOnClickListener { moreInfoOnPlane() }
+    }
+
 
     companion object {
         // TODO: Rename and change types and number of parameters
@@ -84,6 +96,15 @@ class FlightDetailMapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMapL
             FlightDetailMapFragment().apply {
 
             }
+    }
+
+    private fun moreInfoOnPlane() {
+        val i = Intent(activity, AircraftInfoActivity::class.java)
+        i.putExtra("selectedIcao", viewModel.getSelectedFlightLiveData().value!!.icao24)
+        i.putExtra("lastTimeSeen", viewModel.getSelectedFlightLiveData().value!!.lastSeen)
+        i.putExtra("estDepartureAirport", viewModel.getSelectedFlightLiveData().value!!.estDepartureAirport)
+        i.putExtra("estArrivalAirport", viewModel.getSelectedFlightLiveData().value!!.estArrivalAirport)
+        startActivity(i)
     }
 
     override fun onMapReady(googleMap: GoogleMap) {

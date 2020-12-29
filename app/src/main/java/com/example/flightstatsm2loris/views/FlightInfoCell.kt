@@ -1,11 +1,13 @@
-package com.example.flightstatsm2
+package com.example.flightstatsm2loris.views
 
 import android.content.Context
-import android.graphics.Color
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.widget.LinearLayout
 import android.widget.TextView
+import com.example.flightstatsm2loris.R
+import com.example.flightstatsm2loris.utils.Utils
+import com.example.flightstatsm2loris.models.FlightModel
 
 /**
  * Created by sergio on 15/12/2020
@@ -59,7 +61,7 @@ class FlightInfoCell : LinearLayout {
     }
 
     //CACA
-    fun bindData(flight : FlightModel ){
+    fun bindData(flight : FlightModel){
         flightName?.text = "#"+ flight.callsign
         depAirportName?.text = flight.estDepartureAirport
         arrAirportName?.text = flight.estArrivalAirport

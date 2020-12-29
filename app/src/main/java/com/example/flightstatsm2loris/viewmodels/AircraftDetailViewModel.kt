@@ -1,0 +1,106 @@
+package com.example.flightstatsm2loris.viewmodels
+
+import android.util.Log
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.flightstatsm2loris.models.Aircraft
+import com.example.flightstatsm2loris.models.FlightModel
+import com.example.flightstatsm2loris.network.RequestsManager
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import org.json.JSONArray
+import org.json.JSONObject
+
+class AircraftDetailViewModel : ViewModel(), RequestsManager.RequestListener {
+
+    val isLoadingLiveData: MutableLiveData<Boolean> = MutableLiveData()
+    private val selectedAircraftLiveData: MutableLiveData<Aircraft> = MutableLiveData()
+
+    val aircraftICAO: MutableLiveData<String> = MutableLiveData()
+    val aircraftLastSeen: MutableLiveData<Long> = MutableLiveData()
+    val aircraftEstDepartureAirport: MutableLiveData<String> = MutableLiveData()
+    val aircraftEstArrivalAirport: MutableLiveData<String> = MutableLiveData()
+
+
+
+    override fun onRequestSuccess(result: String?) {
+        TODO("Not yet implemented")
+    }
+
+    override fun onRequestFailed() {
+        TODO("Not yet implemented")
+    }
+
+
+    // On cherche d'abord à avoir les données en live de l'avion
+    // si on en a pas on va les chercher au moment où il a été aperçu pour la dernière fois
+    fun searchAircraftData(live: Boolean) {
+        val baseUrl: String = "https://opensky-network.org/api/states/all"
+        viewModelScope.launch {
+            isLoadingLiveData.value = true
+            val result = withContext(Dispatchers.IO) {
+                RequestsManager.getSuspended(baseUrl, getAircraftRequestParams(live))
+            }
+            isLoadingLiveData.value = false
+            if (result == null) {
+                Log.e("Request", "Empty request response")
+            } else {
+
+                if ((JSONObject(result)["states"])::class != JSONArray::class) {
+                    Log.e("Parsing aircraft data", "States are null, we should specify a time, now trying with last time seen")
+                    searchAircraftData(false)
+                } else {
+
+                    // Pas très classe/safe comme façon de faire certes,
+                    // je n'arrive pas à parser correctement avec des index
+                    // (pas de key dans la réponse API)
+                    val states = (JSONObject(result)["states"] as JSONArray)[0] as JSONArray
+
+                    val newAircraft = Aircraft(
+                        states[0] as String,
+                        states[1] as String?,
+                        states[2] as String,
+                        states[4] as Int?,
+                        states[5] as Double?,
+                        states[6] as Double?,
+                        states[7] as Double?,
+                        states[8] as Boolean,
+                        states[9] as Double?,
+                        states[11] as Double?,
+                        states[13] as Double?,
+                        states[16] as Int
+                    )
+
+                    Log.e("Aircraft data", newAircraft.toString())
+
+                    selectedAircraftLiveData.value = newAircraft
+                }
+            }
+        }
+    }
+
+    private fun getAircraftRequestParams(live: Boolean): Map<String, String> {
+        val params = HashMap<String, String>()
+        params["icao24"] = aircraftICAO.value!!
+        if (!live) {
+            params["time"] = aircraftLastSeen.value!!.toString()
+        }
+        return params
+    }
+
+    fun updateSelectedFlightDataAndSearch(icao: String, lastSeen: Long, depAirport: String, arrAirport: String) {
+        aircraftICAO.value = icao
+        aircraftLastSeen.value = lastSeen
+        aircraftEstDepartureAirport.value = depAirport
+        aircraftEstArrivalAirport.value = arrAirport
+        searchAircraftData(true)
+    }
+
+    fun getCurrentAircraftData(): LiveData<Aircraft> {
+        return selectedAircraftLiveData
+    }
+
+}

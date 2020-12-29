@@ -1,12 +1,13 @@
-package com.example.flightstatsm2
+package com.example.flightstatsm2loris.utils
 
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.drawable.Drawable
 import android.util.Log
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.example.flightstatsm2loris.FlightApplication
+import com.example.flightstatsm2loris.models.Airport
+import com.example.flightstatsm2loris.models.FlightModel
 import com.google.android.gms.maps.model.LatLng
 import com.google.gson.Gson
 import com.google.gson.JsonArray
@@ -17,7 +18,6 @@ import java.io.*
 import java.nio.charset.Charset
 import java.text.SimpleDateFormat
 import java.util.*
-import java.util.logging.Handler
 import kotlin.collections.ArrayList
 
 

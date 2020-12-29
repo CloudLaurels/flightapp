@@ -1,4 +1,4 @@
-package com.example.flightstatsm2
+package com.example.flightstatsm2loris.fragments
 
 import android.os.Bundle
 import android.util.Log
@@ -6,9 +6,12 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.flightstatsm2loris.adapters.FlightListRecyclerAdapter
+import com.example.flightstatsm2loris.viewmodels.FlightListViewModel
+import com.example.flightstatsm2loris.R
+import com.example.flightstatsm2loris.models.FlightModel
 import kotlinx.android.synthetic.main.fragment_flight_list.*
 
 // TODO: Rename parameter arguments, choose names that match

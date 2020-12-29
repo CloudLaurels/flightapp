@@ -1,10 +1,15 @@
-package com.example.flightstatsm2
+package com.example.flightstatsm2loris.viewmodels
 
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.flightstatsm2loris.network.RequestsManager
+import com.example.flightstatsm2loris.utils.Utils
+import com.example.flightstatsm2loris.models.Airport
+import com.example.flightstatsm2loris.models.FlightModel
+import com.example.flightstatsm2loris.models.SearchDataModel
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -25,7 +30,7 @@ class FlightListViewModel : ViewModel(), RequestsManager.RequestListener {
         airportListLiveData.value = Utils.generateAirportList()
     }
 
-    fun getSelectedFlightNameLiveData(): LiveData<FlightModel> {
+    fun getSelectedFlightLiveData(): LiveData<FlightModel> {
         return selectedFlightLiveData
     }
 
@@ -87,6 +92,8 @@ class FlightListViewModel : ViewModel(), RequestsManager.RequestListener {
         }
         // SearchFlightsAsyncTask(this).execute(searchDataModel)
     }
+
+
 
     private fun getRequestParams(searchModel: SearchDataModel?): Map<String, String>? {
         val params = HashMap<String, String>()

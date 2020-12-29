@@ -1,4 +1,4 @@
-package com.example.flightstatsm2
+package com.example.flightstatsm2loris
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4

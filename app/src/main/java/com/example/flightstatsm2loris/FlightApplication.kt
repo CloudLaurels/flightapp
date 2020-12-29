@@ -1,4 +1,4 @@
-package com.example.flightstatsm2
+package com.example.flightstatsm2loris
 
 import android.app.Application
 import android.content.Context

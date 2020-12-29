@@ -1,7 +1,9 @@
-package com.example.flightstatsm2
+package com.example.flightstatsm2loris.network
 
 import android.os.AsyncTask
 import android.util.Log
+import com.example.flightstatsm2loris.models.SearchDataModel
+import com.example.flightstatsm2loris.network.RequestsManager
 
 /**
  * Created by sergio on 19/11/2020

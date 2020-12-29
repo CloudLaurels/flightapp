@@ -7,10 +7,10 @@
     tools:context=".activities.FlightListActivity"
     android:id="@+id/activityContainer">
 
-    <fragment
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:name="com.example.flightstatsm2loris.fragments.FlightListFragment"
-        android:id="@+id/fragmentFlightList" />
 
+    <fragment
+        android:id="@+id/fragment"
+        android:name="com.example.flightstatsm2loris.fragments.AircraftDetailMapFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 </FrameLayout>

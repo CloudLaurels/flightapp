@@ -1,4 +1,4 @@
-package com.example.flightstatsm2
+package com.example.flightstatsm2loris.fragments
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -6,7 +6,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProvider
-import kotlinx.android.synthetic.main.fragment_flight_detail.*
+import com.example.flightstatsm2loris.viewmodels.FlightListViewModel
+import com.example.flightstatsm2loris.R
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -40,7 +41,7 @@ class FlightDetailFragment : Fragment() {
     ): View? {
 
         viewModel = ViewModelProvider(requireActivity()).get(FlightListViewModel::class.java)
-        viewModel.getSelectedFlightNameLiveData().observe(this,{
+        viewModel.getSelectedFlightLiveData().observe(this,{
             //flight_name.text = it
         })
 

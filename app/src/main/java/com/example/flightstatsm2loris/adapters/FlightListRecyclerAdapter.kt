@@ -1,9 +1,11 @@
-package com.example.flightstatsm2
+package com.example.flightstatsm2loris.adapters
 
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.example.flightstatsm2loris.models.FlightModel
+import com.example.flightstatsm2loris.views.FlightInfoCell
 
 /**
  * Created by sergio on 15/12/2020

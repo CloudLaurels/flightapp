@@ -1,4 +1,4 @@
-package com.example.flightstatsm2
+package com.example.flightstatsm2loris.network
 
 import android.util.Log
 import java.io.BufferedReader

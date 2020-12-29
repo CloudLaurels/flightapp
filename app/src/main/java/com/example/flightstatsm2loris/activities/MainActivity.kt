@@ -1,14 +1,15 @@
-package com.example.flightstatsm2
+package com.example.flightstatsm2loris.activities
 
 import android.app.DatePickerDialog
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.TextView
 import androidx.lifecycle.ViewModelProvider
+import com.example.flightstatsm2loris.viewmodels.MainViewModel
+import com.example.flightstatsm2loris.R
 import kotlinx.android.synthetic.main.activity_main.*
 import java.text.SimpleDateFormat
 import java.util.*
@@ -78,7 +79,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun search() {
-        val i = Intent(this,FlightListActivity::class.java)
+        val i = Intent(this, FlightListActivity::class.java)
         i.putExtra("begin", viewModel.getBeginDateLiveData().value!!.timeInMillis / 1000)
         i.putExtra("end", viewModel.getEndDateLiveData().value!!.timeInMillis / 1000)
         i.putExtra("icao", viewModel?.getAirportListLiveData().value?.get(spinner_airport.selectedItemPosition)?.icao)

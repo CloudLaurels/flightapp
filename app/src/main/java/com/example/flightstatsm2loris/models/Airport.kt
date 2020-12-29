@@ -1,4 +1,4 @@
-package com.example.flightstatsm2
+package com.example.flightstatsm2loris.models
 
 /**
  * Created by sergio on 2019-11-10

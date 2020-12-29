@@ -1,11 +1,13 @@
-package com.example.flightstatsm2
+package com.example.flightstatsm2loris.activities
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.ViewModelProvider
+import com.example.flightstatsm2loris.fragments.FlightDetailMapFragment
+import com.example.flightstatsm2loris.viewmodels.FlightListViewModel
+import com.example.flightstatsm2loris.R
 import kotlinx.android.synthetic.main.activity_flight_list.*
-
 
 class FlightListActivity : AppCompatActivity() {
 
@@ -25,7 +27,7 @@ class FlightListActivity : AppCompatActivity() {
             intent.getLongExtra("end", 0)
         )
 
-        viewModel.getSelectedFlightNameLiveData().observe(this, {
+        viewModel.getSelectedFlightLiveData().observe(this, {
             //switch fragment
             val newFragment: FlightDetailMapFragment = FlightDetailMapFragment.newInstance()
             val transaction: FragmentTransaction = supportFragmentManager.beginTransaction()
