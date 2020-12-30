@@ -20,4 +20,11 @@ data class Aircraft(
     val verticalRate: Double?,
     val geoAltitude: Double?,
     val positionSource: Int
-)
+) {
+    fun getLitteralState(): String {
+        if (onGround) {
+            return "Not flying"
+        }
+        return "Flying"
+    }
+}

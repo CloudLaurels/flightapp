@@ -8,11 +8,14 @@ import androidx.lifecycle.viewModelScope
 import com.example.flightstatsm2loris.models.Aircraft
 import com.example.flightstatsm2loris.models.FlightModel
 import com.example.flightstatsm2loris.network.RequestsManager
+import com.example.flightstatsm2loris.utils.Utils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.json.JSONArray
 import org.json.JSONObject
+import java.util.*
+import kotlin.collections.HashMap
 
 class AircraftDetailViewModel : ViewModel(), RequestsManager.RequestListener {
 
@@ -23,6 +26,11 @@ class AircraftDetailViewModel : ViewModel(), RequestsManager.RequestListener {
     val aircraftLastSeen: MutableLiveData<Long> = MutableLiveData()
     val aircraftEstDepartureAirport: MutableLiveData<String> = MutableLiveData()
     val aircraftEstArrivalAirport: MutableLiveData<String> = MutableLiveData()
+
+    val isAircraftOnline: MutableLiveData<Boolean> = MutableLiveData()
+
+    val aircraftFlightListLiveData: MutableLiveData<List<FlightModel>> = MutableLiveData()
+
 
 
 
@@ -77,6 +85,7 @@ class AircraftDetailViewModel : ViewModel(), RequestsManager.RequestListener {
                     Log.e("Aircraft data", newAircraft.toString())
 
                     selectedAircraftLiveData.value = newAircraft
+                    searchAircraftFlights()
                 }
             }
         }
@@ -91,6 +100,43 @@ class AircraftDetailViewModel : ViewModel(), RequestsManager.RequestListener {
         return params
     }
 
+    private fun searchAircraftFlights() {
+        val baseUrl = "https://opensky-network.org/api/flights/aircraft"
+
+        viewModelScope.launch {
+            isLoadingLiveData.value = true
+            val result = withContext(Dispatchers.IO) {
+                RequestsManager.getSuspended(baseUrl, getAircraftFlightsRequestParams())
+            }
+            isLoadingLiveData.value = false
+            if (result == null) {
+                Log.e("Request", "Empty request response")
+            } else {
+                val flightList = Utils.getFlightListFromString(result)
+                Log.d("Aircraft Flight List", flightList.toString())
+                aircraftFlightListLiveData.value = flightList
+            }
+        }
+    }
+
+    private fun getAircraftFlightsRequestParams(): Map<String, String> {
+        val params = HashMap<String, String>()
+        params["icao24"] = aircraftICAO.value!!
+
+        val currentTime = Calendar.getInstance().timeInMillis / 1000;
+
+        val fakeCalendar = Calendar.getInstance()
+        fakeCalendar.add(Calendar.DAY_OF_YEAR, -3)
+        val threeDaysBefore = fakeCalendar.timeInMillis / 1000;
+
+        params["begin"] = threeDaysBefore.toString()
+        params["end"] = currentTime.toString()
+
+        return params
+    }
+
+
+
     fun updateSelectedFlightDataAndSearch(icao: String, lastSeen: Long, depAirport: String, arrAirport: String) {
         aircraftICAO.value = icao
         aircraftLastSeen.value = lastSeen
@@ -101,6 +147,13 @@ class AircraftDetailViewModel : ViewModel(), RequestsManager.RequestListener {
 
     fun getCurrentAircraftData(): LiveData<Aircraft> {
         return selectedAircraftLiveData
+    }
+
+    fun isAircraftOnline(): Boolean {
+        if (isAircraftOnline.value != null) {
+            return isAircraftOnline.value!!
+        }
+        return false
     }
 
 }
