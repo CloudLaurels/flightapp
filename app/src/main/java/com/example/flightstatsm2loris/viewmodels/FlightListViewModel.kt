@@ -27,7 +27,7 @@ class FlightListViewModel : ViewModel(), RequestsManager.RequestListener {
     val isLoadingLiveData: MutableLiveData<Boolean> = MutableLiveData()
     private val selectedFlightLiveData: MutableLiveData<FlightModel> = MutableLiveData()
 
-    private val selectedFlightAirportsCoordinates: MutableLiveData<HashMap<String, LatLng>> = MutableLiveData()
+    private val selectedFlightAirportsCoordinates: MutableLiveData<HashMap<String, LatLng?>> = MutableLiveData()
 
     init {
         airportListLiveData.value = Utils.generateAirportList()
@@ -35,7 +35,7 @@ class FlightListViewModel : ViewModel(), RequestsManager.RequestListener {
 
     //Si on trouve pas l'airport dans le json hardcodé on va le chercher sur l'API
     private fun retrieveAirportsCoordinates(flight: FlightModel) {
-        var airportsCoords = HashMap<String, LatLng>()
+        var airportsCoords = HashMap<String, LatLng?>()
 
         var departureCoords = getDepartureAirportCoordinates()
         var arrivalCoords = getArrivalAirportCoordinates()
@@ -53,7 +53,9 @@ class FlightListViewModel : ViewModel(), RequestsManager.RequestListener {
                 }
                 if (result == null) {
                     Log.e("Airport finder", "Could not find a airport with this ICAO")
-                    selectedFlightAirportsCoordinates.value = null
+                    airportsCoords["arrival"] = arrivalCoords
+                    airportsCoords["departure"] = departureCoords
+                    selectedFlightAirportsCoordinates.value = airportsCoords
                 } else {
                     val position = JSONObject(result)["position"] as JSONObject
                     val lat = position["latitude"] as Double
@@ -79,7 +81,7 @@ class FlightListViewModel : ViewModel(), RequestsManager.RequestListener {
         return selectedFlightLiveData
     }
 
-    fun getAirportsDetailLiveData(): LiveData<HashMap<String, LatLng>> {
+    fun getAirportsDetailLiveData(): LiveData<HashMap<String, LatLng?>> {
         return selectedFlightAirportsCoordinates
     }
 

@@ -12,6 +12,7 @@ import kotlinx.android.synthetic.main.activity_flight_list.*
 class FlightListActivity : AppCompatActivity() {
 
     private lateinit var viewModel: FlightListViewModel
+    private var viewAlreadyExists = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,10 +39,13 @@ class FlightListActivity : AppCompatActivity() {
                 transaction.commit()
             }
             else{
-                transaction.add(R.id.detail_container, newFragment)
-                transaction.addToBackStack(null)
+                if (!viewAlreadyExists) {
+                    transaction.add(R.id.detail_container, newFragment)
+                    transaction.addToBackStack(null)
 
-                transaction.commit()
+                    transaction.commit()
+                    viewAlreadyExists = true
+                }
             }
         })
 

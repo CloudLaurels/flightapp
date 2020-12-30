@@ -11,7 +11,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.AppCompat.Light">
+        android:theme="@style/Theme.AppCompat.Light.DarkActionBar">
         <meta-data android:name="com.google.android.geo.API_KEY" android:value="AIzaSyC2Tn6Huu-Al3BthmR5UW1VqToWrkQ5ezQ"/>
         <activity android:name="com.example.flightstatsm2loris.activities.AircraftInfoActivity"></activity>
         <activity android:name="com.example.flightstatsm2loris.activities.FlightListActivity"></activity>

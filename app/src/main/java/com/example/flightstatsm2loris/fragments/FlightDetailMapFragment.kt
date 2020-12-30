@@ -2,6 +2,7 @@ package com.example.flightstatsm2loris.fragments
 
 
 import android.content.Intent
+import android.content.res.Resources
 import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
@@ -10,18 +11,15 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import com.example.flightstatsm2loris.viewmodels.FlightListViewModel
 import com.example.flightstatsm2loris.R
 import com.example.flightstatsm2loris.activities.AircraftInfoActivity
-import com.example.flightstatsm2loris.activities.FlightListActivity
 import com.example.flightstatsm2loris.utils.Utils
+import com.example.flightstatsm2loris.viewmodels.FlightListViewModel
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.model.*
-import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.activity_main.searchButton
 import kotlinx.android.synthetic.main.fragment_flight_detail_map.*
 
 
@@ -47,7 +45,8 @@ class FlightDetailMapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMapL
     private var depCoordinates: LatLng? = null
     private var arrCoordinates: LatLng? = null
 
-    private var mapReady = false
+    private var mapLoaded = false
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -82,6 +81,11 @@ class FlightDetailMapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMapL
 
     }
 
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        mMapView.onSaveInstanceState(outState)
+    }
 
     companion object {
         // TODO: Rename and change types and number of parameters
@@ -131,19 +135,40 @@ class FlightDetailMapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMapL
         val polyline: Polyline = myGoogleMap.addPolyline(polyLineOptions)
         polyline.isGeodesic = true
 
+        if (mapLoaded) {
+            onMapLoaded()
+        }
     }
 
     private fun moreInfoOnPlane() {
         val i = Intent(activity, AircraftInfoActivity::class.java)
         i.putExtra("selectedIcao", viewModel.getSelectedFlightLiveData().value!!.icao24)
         i.putExtra("lastTimeSeen", viewModel.getSelectedFlightLiveData().value!!.lastSeen)
-        i.putExtra("estDepartureAirport", viewModel.getSelectedFlightLiveData().value!!.estDepartureAirport)
-        i.putExtra("estArrivalAirport", viewModel.getSelectedFlightLiveData().value!!.estArrivalAirport)
+        i.putExtra(
+            "estDepartureAirport",
+            viewModel.getSelectedFlightLiveData().value!!.estDepartureAirport
+        )
+        i.putExtra(
+            "estArrivalAirport",
+            viewModel.getSelectedFlightLiveData().value!!.estArrivalAirport
+        )
         startActivity(i)
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
         myGoogleMap = googleMap
+
+        try {
+            val success = googleMap.setMapStyle(
+                MapStyleOptions.loadRawResourceStyle(context, R.raw.style_json)
+            )
+            if (!success) {
+                Log.e("map styling", "Style parsing failed.")
+            }
+        } catch (e: Resources.NotFoundException) {
+            Log.e("map styling", "Can't find style. Error: ", e)
+        }
+
         viewModel.getAirportsDetailLiveData().observe(this, {
             if (it == null) {
                 depCoordinates = null
@@ -162,6 +187,7 @@ class FlightDetailMapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMapL
     override fun onMapLoaded() {
         if (depCoordinates != null && arrCoordinates != null) {
             this.zoomToFit(depCoordinates!!, arrCoordinates!!)
+            mapLoaded = true
         }
     }
 
