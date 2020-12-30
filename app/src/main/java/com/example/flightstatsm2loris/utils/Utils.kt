@@ -4,6 +4,8 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.Log
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.flightstatsm2loris.FlightApplication
 import com.example.flightstatsm2loris.models.Airport
@@ -229,6 +231,8 @@ class Utils private constructor() {
             val bitmap = BitmapFactory.decodeResource(context.resources, icon)
             return Bitmap.createScaledBitmap(bitmap, width, height, false)
         }
+
+
     }
 
 
