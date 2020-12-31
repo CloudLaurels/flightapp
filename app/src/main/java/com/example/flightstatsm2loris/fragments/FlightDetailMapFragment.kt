@@ -187,8 +187,8 @@ class FlightDetailMapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMapL
     override fun onMapLoaded() {
         if (depCoordinates != null && arrCoordinates != null) {
             this.zoomToFit(depCoordinates!!, arrCoordinates!!)
-            mapLoaded = true
         }
+        mapLoaded = true
     }
 
 

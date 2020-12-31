@@ -67,6 +67,24 @@ class AircraftDetailViewModel : ViewModel(), RequestsManager.RequestListener {
                     // (pas de key dans la réponse API)
                     val states = (JSONObject(result)["states"] as JSONArray)[0] as JSONArray
 
+                    // Bien que l'api (https://opensky-network.org/apidoc/rest.html#all-state-vectors)
+                    // précise que la plupart des propriétés sont des Floats, il arrive
+                    // qu'elle renvoie des Integers de temps à autres ??????????
+                    var vertRate = states[11]
+                    if (vertRate::class == Int::class) {
+                        vertRate = (vertRate as Int).toDouble()
+                    }
+
+                    var baroAltitude = states[7]
+                    if (baroAltitude::class == Int::class) {
+                        baroAltitude = (baroAltitude as Int).toDouble()
+                    }
+
+                    var geoAltitude = states[13]
+                    if (geoAltitude::class == Int::class) {
+                        geoAltitude = (geoAltitude as Int).toDouble()
+                    }
+
                     val newAircraft = Aircraft(
                         states[0] as String,
                         states[1] as String?,
@@ -74,11 +92,11 @@ class AircraftDetailViewModel : ViewModel(), RequestsManager.RequestListener {
                         states[4] as Int?,
                         states[5] as Double?,
                         states[6] as Double?,
-                        states[7] as Double?,
+                        baroAltitude as Double?,
                         states[8] as Boolean,
                         states[9] as Double?,
-                        states[11] as Double?,
-                        states[13] as Double?,
+                        vertRate as Double?,
+                        geoAltitude as Double?,
                         states[16] as Int
                     )
 
@@ -137,7 +155,7 @@ class AircraftDetailViewModel : ViewModel(), RequestsManager.RequestListener {
 
 
 
-    fun updateSelectedFlightDataAndSearch(icao: String, lastSeen: Long, depAirport: String, arrAirport: String) {
+    fun updateSelectedFlightDataAndSearch(icao: String, lastSeen: Long, depAirport: String?, arrAirport: String?) {
         aircraftICAO.value = icao
         aircraftLastSeen.value = lastSeen
         aircraftEstDepartureAirport.value = depAirport

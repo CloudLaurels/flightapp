@@ -1,6 +1,7 @@
 package com.example.flightstatsm2loris.fragments
 
 
+import android.content.res.Resources
 import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
@@ -56,18 +57,7 @@ class AircraftDetailMapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMa
 
         viewModel = ViewModelProvider(requireActivity()).get(AircraftDetailViewModel::class.java)
 
-        viewModel.getCurrentAircraftData().observe(this, {
-            callSign.text = it.callsign
-            lastSeenTime.text = it.lastContact.toString()
-            icao.text = it.icao
-            country.text = it.originCountry
-            state.text = it.getLitteralState()
-            speed.text = it.velocity.toString()
-            altgeo.text = it.geoAltitude.toString()
-            altbaro.text = it.baroAltitude.toString()
-            verticalRate.text = it.verticalRate.toString()
-            source.text = it.positionSource.toString()
-        })
+
 
         mMapView = rootView.findViewById(R.id.aircraftMapView) as MapView
         mMapView.onCreate(savedInstanceState)
@@ -92,6 +82,17 @@ class AircraftDetailMapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMa
     override fun onMapReady(googleMap: GoogleMap) {
         myGoogleMap = googleMap
         myGoogleMap.setOnMapLoadedCallback(this)
+
+        try {
+            val success = googleMap.setMapStyle(
+                MapStyleOptions.loadRawResourceStyle(context, R.raw.style_json)
+            )
+            if (!success) {
+                Log.e("map styling", "Style parsing failed.")
+            }
+        } catch (e: Resources.NotFoundException) {
+            Log.e("map styling", "Can't find style. Error: ", e)
+        }
 
 
 //        Log.e("Mapfragment", "Dep airport" + viewModel.getDepartureAirportCoordinates())

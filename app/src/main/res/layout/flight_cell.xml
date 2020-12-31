@@ -16,18 +16,21 @@
             android:id="@+id/departure_date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="date" />
+            android:text="date"
+            android:textColor="#FFFFFF" />
 
         <TextView
             android:id="@+id/departure_airport"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textColor="#FFFFFF"
             android:text="LLLL" />
 
         <TextView
             android:id="@+id/departure_hour"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textColor="#FFFFFF"
             android:text="hour" />
 
     </LinearLayout>
@@ -60,12 +63,14 @@
                 android:id="@+id/flight_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textColor="#FFFFFF"
                 android:text="N°5555555555" />
 
             <TextView
                 android:id="@+id/flight_duration"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textColor="#FFFFFF"
                 android:text="3h00" />
 
         </LinearLayout>
@@ -91,18 +96,21 @@
             android:id="@+id/arrival_date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textColor="#FFFFFF"
             android:text="date" />
 
         <TextView
             android:id="@+id/arrival_airport"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textColor="#FFFFFF"
             android:text="MMMM" />
 
         <TextView
             android:id="@+id/arrival_hour"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textColor="#FFFFFF"
             android:text="hour" />
 
     </LinearLayout>
