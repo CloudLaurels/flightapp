@@ -5,7 +5,6 @@ package com.example.flightstatsm2loris.models
 //   val welcome9 = Welcome9.fromJson(jsonString)
 
 
-import com.beust.klaxon.*
 import kotlin.math.round
 
 data class Aircraft(
@@ -20,7 +19,8 @@ data class Aircraft(
     val velocity: Double?,
     val verticalRate: Double?,
     val geoAltitude: Double?,
-    val positionSource: Int
+    val positionSource: Int,
+    val currentOrientation: Double?
 ) {
     // Je pense que ces fonctions devraient aller dans le view model
     // mais c'est plus pratique ici

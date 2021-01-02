@@ -232,6 +232,13 @@ class Utils private constructor() {
             return Bitmap.createScaledBitmap(bitmap, width, height, false)
         }
 
+        fun generateMediumIcon(context: Context, icon: Int): Bitmap {
+            val height = 200
+            val width = 200
+            val bitmap = BitmapFactory.decodeResource(context.resources, icon)
+            return Bitmap.createScaledBitmap(bitmap, width, height, false)
+        }
+
 
     }
 

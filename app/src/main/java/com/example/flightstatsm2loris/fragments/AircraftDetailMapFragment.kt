@@ -37,6 +37,8 @@ class AircraftDetailMapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMa
     private lateinit var mMapView: MapView
     private lateinit var myGoogleMap: GoogleMap
 
+    private var zoomed = false
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -94,74 +96,65 @@ class AircraftDetailMapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMa
             Log.e("map styling", "Can't find style. Error: ", e)
         }
 
-        viewModel.selectedFlightRouteCoordinates.observe(this, {
-            val depIcon = Utils.generateSmallIcon(context!!, R.drawable.airplane)
-            val arrIcon = Utils.generateSmallIcon(context!!, R.drawable.airplane)
+        viewModel.getCurrentAircraftData().observe(this, {
+            val airplaneIcon = Utils.generateSmallIcon(context!!, R.drawable.airplane)
+            Log.i("Rotation check", it.currentOrientation.toString())
+            if (it.latitude != null && it.longitude != null) {
 
-            myGoogleMap.addMarker(
-                MarkerOptions()
-                    .position(it["departure"]!!)
-                    .title("Departure airport")
-                    .icon(BitmapDescriptorFactory.fromBitmap(depIcon))
-                    .anchor(0.5f, 0.5f)
-            )
+                val airplaneLocation = LatLng(it.latitude, it.longitude!!)
 
-            myGoogleMap.addMarker(
-                MarkerOptions()
-                    .position(it["arrival"]!!)
-                    .title("Arrival airport")
-                    .icon(BitmapDescriptorFactory.fromBitmap(arrIcon))
-                    .anchor(0.5f, 0.5f)
-            )
+                myGoogleMap.addMarker(
+                    MarkerOptions()
+                        .position(airplaneLocation)
+                        .icon(BitmapDescriptorFactory.fromBitmap(airplaneIcon))
+                        .anchor(0.5f, 0.5f)
+                        .rotation(it.currentOrientation!!.toFloat())
+                )
 
+                viewModel.selectedFlightRouteCoordinates.observe(this, { it1 ->
+                    val depIcon = Utils.generateSmallIcon(context!!, R.drawable.departuretower)
+                    val arrIcon = Utils.generateSmallIcon(context!!, R.drawable.arrivaltower)
 
-            val poi = ArrayList<LatLng>()
-            val polyLineOptions = PolylineOptions()
-            poi.add(it["departure"]!!) //from
-            poi.add(it["arrival"]!!) // to
-            polyLineOptions.width(7f)
-            polyLineOptions.geodesic(true)
-            polyLineOptions.color(Color.BLUE)
-            polyLineOptions.addAll(poi)
-            val polyline: Polyline = myGoogleMap.addPolyline(polyLineOptions)
-            polyline.isGeodesic = true
+                    myGoogleMap.addMarker(
+                        MarkerOptions()
+                            .position(it1["departure"]!!)
+                            .title("Departure airport")
+                            .icon(BitmapDescriptorFactory.fromBitmap(depIcon))
+                            .anchor(0.5f, 0.5f)
+                    )
 
+                    myGoogleMap.addMarker(
+                        MarkerOptions()
+                            .position(it1["arrival"]!!)
+                            .title("Arrival airport")
+                            .icon(BitmapDescriptorFactory.fromBitmap(arrIcon))
+                            .anchor(0.5f, 0.5f)
+                    )
 
+                    val poi = ArrayList<LatLng>()
+                    val polyLineOptions = PolylineOptions()
+                    poi.add(airplaneLocation) //from
+                    poi.add(it1["arrival"]!!) // to
+                    polyLineOptions.width(7f)
+                    polyLineOptions.geodesic(true)
+                    polyLineOptions.color(Color.YELLOW)
+                    polyLineOptions.addAll(poi)
+                    val polyline: Polyline = myGoogleMap.addPolyline(polyLineOptions)
+                    polyline.isGeodesic = true
+
+                    if (!zoomed) {
+                        zoomToFit(airplaneLocation, it1["arrival"]!!)
+                    }
+                })
+
+                if (!zoomed) {
+                    zoomToAirplane(airplaneLocation)
+                }
+            }
         })
 
-//        Log.e("Mapfragment", "Dep airport" + viewModel.getDepartureAirportCoordinates())
-//        Log.e("Mapfragment", "Arrival airport" + viewModel.getArrivalAirportCoordinates())
-//
-//        val depIcon = Utils.generateSmallIcon(context!!, R.drawable.airplane)
-//        val arrIcon = Utils.generateSmallIcon(context!!, R.drawable.airplane)
-//
-//        myGoogleMap.addMarker(
-//            MarkerOptions()
-//                .position(depCoordinates)
-//                .title("Departure airport")
-//                .icon(BitmapDescriptorFactory.fromBitmap(depIcon))
-//                .anchor(0.5f, 0.5f)
-//        )
-//
-//        myGoogleMap.addMarker(
-//            MarkerOptions()
-//                .position(arrCoordinates)
-//                .title("Arrival airport")
-//                .icon(BitmapDescriptorFactory.fromBitmap(arrIcon))
-//                .anchor(0.5f, 0.5f)
-//        )
-//
-//
-//        val poi = ArrayList<LatLng>()
-//        val polyLineOptions = PolylineOptions()
-//        poi.add(depCoordinates) //from
-//        poi.add(arrCoordinates) // to
-//        polyLineOptions.width(7f)
-//        polyLineOptions.geodesic(true)
-//        polyLineOptions.color(Color.BLUE)
-//        polyLineOptions.addAll(poi)
-//        val polyline: Polyline = myGoogleMap.addPolyline(polyLineOptions)
-//        polyline.isGeodesic = true
+
+
 
     }
 
@@ -172,6 +165,11 @@ class AircraftDetailMapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMa
         //this.zoomToFit(depCoordinates, arrCoordinates)
     }
 
+    private fun zoomToAirplane(pos: LatLng) {
+        myGoogleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(pos, 6F))
+        zoomed = true
+    }
+
     private fun zoomToFit(poi1: LatLng, poi2: LatLng) {
         val group = LatLngBounds.Builder()
             .include(poi1) // LatLgn object1
@@ -179,5 +177,6 @@ class AircraftDetailMapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMa
             .build()
 
         myGoogleMap.animateCamera(CameraUpdateFactory.newLatLngBounds(group, 400))
+        zoomed = true
     }
 }

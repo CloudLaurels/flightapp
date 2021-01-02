@@ -98,6 +98,13 @@ class AircraftDetailViewModel : ViewModel(), RequestsManager.RequestListener {
                         geoAltitude = 0.0
                     }
 
+                    var currOrientation = states[10]
+                    if (currOrientation::class == Int::class) {
+                        currOrientation = (currOrientation as Int).toDouble()
+                    } else if (currOrientation == null) {
+                        currOrientation = 0.0
+                    }
+
                     val newAircraft = Aircraft(
                         states[0] as String,
                         states[1] as String?,
@@ -110,7 +117,8 @@ class AircraftDetailViewModel : ViewModel(), RequestsManager.RequestListener {
                         states[9] as Double?,
                         vertRate as Double?,
                         geoAltitude as Double?,
-                        states[16] as Int
+                        states[16] as Int,
+                        currOrientation as Double?
                     )
 
                     Log.e("Aircraft data", newAircraft.toString())
@@ -170,7 +178,11 @@ class AircraftDetailViewModel : ViewModel(), RequestsManager.RequestListener {
 
     private fun getAircraftCurrentFlightDetailParams(): Map<String, String> {
         val params = HashMap<String, String>()
-        params["callsign"] = aircraftCallSign.value!!
+        if (isAircraftOnline.value == true) {
+            params["callsign"] = selectedAircraftLiveData.value!!.callsign!!
+        } else if (isAircraftOnline.value == false) {
+            params["callsign"] = aircraftCallSign.value!!
+        }
         return params
     }
 
