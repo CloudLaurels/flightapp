@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#CC171F26"
     tools:context=".activities.FlightListActivity"
     android:id="@+id/activityContainer">
 

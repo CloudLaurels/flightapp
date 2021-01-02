@@ -129,8 +129,6 @@ class FlightListViewModel : ViewModel(), RequestsManager.RequestListener {
             val result = withContext(Dispatchers.IO) {
                 RequestsManager.getSuspended(baseUrl, getRequestParams(searchDataModel))
             }
-            //end loading
-            isLoadingLiveData.value = false
             if (result == null) {
                 Log.e("Request", "Empty request response")
 
@@ -139,6 +137,10 @@ class FlightListViewModel : ViewModel(), RequestsManager.RequestListener {
                 Log.d("models list", flightList.toString())
                 flightListLiveData.value = flightList
             }
+            //end loading
+            // we want to change the value here to make it more easier to display an error
+            // message about the data being null or not
+            isLoadingLiveData.value = false
 
         }
         // SearchFlightsAsyncTask(this).execute(searchDataModel)

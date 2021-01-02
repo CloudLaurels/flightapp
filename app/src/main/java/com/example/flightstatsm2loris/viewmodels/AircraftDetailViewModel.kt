@@ -69,7 +69,7 @@ class AircraftDetailViewModel : ViewModel(), RequestsManager.RequestListener {
 
                     // Bien que l'api (https://opensky-network.org/apidoc/rest.html#all-state-vectors)
                     // précise que la plupart des propriétés sont des Floats, il arrive
-                    // qu'elle renvoie des Integers de temps à autres ??????????
+                    // qu'elle renvoie des Integers voire null de temps à autres ??????????
                     var vertRate = states[11]
                     if (vertRate::class == Int::class) {
                         vertRate = (vertRate as Int).toDouble()
@@ -78,11 +78,15 @@ class AircraftDetailViewModel : ViewModel(), RequestsManager.RequestListener {
                     var baroAltitude = states[7]
                     if (baroAltitude::class == Int::class) {
                         baroAltitude = (baroAltitude as Int).toDouble()
+                    } else if (baroAltitude == null) {
+                        baroAltitude = 0.0
                     }
 
                     var geoAltitude = states[13]
                     if (geoAltitude::class == Int::class) {
                         geoAltitude = (geoAltitude as Int).toDouble()
+                    } else if (geoAltitude == null) {
+                        geoAltitude = 0.0
                     }
 
                     val newAircraft = Aircraft(
@@ -118,6 +122,11 @@ class AircraftDetailViewModel : ViewModel(), RequestsManager.RequestListener {
         return params
     }
 
+    private fun searchAircraftFlightDetail() {
+
+    }
+
+    // On cherche enfin les derniers vols de cet avion sur 3 jours
     private fun searchAircraftFlights() {
         val baseUrl = "https://opensky-network.org/api/flights/aircraft"
 
@@ -126,7 +135,6 @@ class AircraftDetailViewModel : ViewModel(), RequestsManager.RequestListener {
             val result = withContext(Dispatchers.IO) {
                 RequestsManager.getSuspended(baseUrl, getAircraftFlightsRequestParams())
             }
-            isLoadingLiveData.value = false
             if (result == null) {
                 Log.e("Request", "Empty request response")
             } else {
@@ -134,6 +142,7 @@ class AircraftDetailViewModel : ViewModel(), RequestsManager.RequestListener {
                 Log.d("Aircraft Flight List", flightList.toString())
                 aircraftFlightListLiveData.value = flightList
             }
+            isLoadingLiveData.value = false
         }
     }
 
@@ -144,6 +153,7 @@ class AircraftDetailViewModel : ViewModel(), RequestsManager.RequestListener {
         val currentTime = Calendar.getInstance().timeInMillis / 1000;
 
         val fakeCalendar = Calendar.getInstance()
+        // 3 derniers jours
         fakeCalendar.add(Calendar.DAY_OF_YEAR, -3)
         val threeDaysBefore = fakeCalendar.timeInMillis / 1000;
 
