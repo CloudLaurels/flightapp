@@ -94,6 +94,40 @@ class AircraftDetailMapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMa
             Log.e("map styling", "Can't find style. Error: ", e)
         }
 
+        viewModel.selectedFlightRouteCoordinates.observe(this, {
+            val depIcon = Utils.generateSmallIcon(context!!, R.drawable.airplane)
+            val arrIcon = Utils.generateSmallIcon(context!!, R.drawable.airplane)
+
+            myGoogleMap.addMarker(
+                MarkerOptions()
+                    .position(it["departure"]!!)
+                    .title("Departure airport")
+                    .icon(BitmapDescriptorFactory.fromBitmap(depIcon))
+                    .anchor(0.5f, 0.5f)
+            )
+
+            myGoogleMap.addMarker(
+                MarkerOptions()
+                    .position(it["arrival"]!!)
+                    .title("Arrival airport")
+                    .icon(BitmapDescriptorFactory.fromBitmap(arrIcon))
+                    .anchor(0.5f, 0.5f)
+            )
+
+
+            val poi = ArrayList<LatLng>()
+            val polyLineOptions = PolylineOptions()
+            poi.add(it["departure"]!!) //from
+            poi.add(it["arrival"]!!) // to
+            polyLineOptions.width(7f)
+            polyLineOptions.geodesic(true)
+            polyLineOptions.color(Color.BLUE)
+            polyLineOptions.addAll(poi)
+            val polyline: Polyline = myGoogleMap.addPolyline(polyLineOptions)
+            polyline.isGeodesic = true
+
+
+        })
 
 //        Log.e("Mapfragment", "Dep airport" + viewModel.getDepartureAirportCoordinates())
 //        Log.e("Mapfragment", "Arrival airport" + viewModel.getArrivalAirportCoordinates())

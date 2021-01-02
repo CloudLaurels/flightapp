@@ -24,6 +24,7 @@ class AircraftInfoActivity: AppCompatActivity() {
 
         viewModel.updateSelectedFlightDataAndSearch(
             intent.getStringExtra("selectedIcao")!!,
+            intent.getStringExtra("selectedCallsign")!!,
             intent.getLongExtra("lastTimeSeen", 0),
             intent.getStringExtra("estDepartureAirport"),
             intent.getStringExtra("estArrivalAirport")

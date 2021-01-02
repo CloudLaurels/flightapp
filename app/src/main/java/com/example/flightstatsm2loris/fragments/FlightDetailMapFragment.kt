@@ -143,6 +143,7 @@ class FlightDetailMapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMapL
     private fun moreInfoOnPlane() {
         val i = Intent(activity, AircraftInfoActivity::class.java)
         i.putExtra("selectedIcao", viewModel.getSelectedFlightLiveData().value!!.icao24)
+        i.putExtra("selectedCallsign", viewModel.getSelectedFlightLiveData().value!!.callsign)
         i.putExtra("lastTimeSeen", viewModel.getSelectedFlightLiveData().value!!.lastSeen)
         i.putExtra(
             "estDepartureAirport",

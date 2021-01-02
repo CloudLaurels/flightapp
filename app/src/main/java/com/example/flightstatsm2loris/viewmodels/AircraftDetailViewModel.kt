@@ -6,12 +6,12 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.flightstatsm2loris.models.Aircraft
+import com.example.flightstatsm2loris.models.Airport
 import com.example.flightstatsm2loris.models.FlightModel
 import com.example.flightstatsm2loris.network.RequestsManager
 import com.example.flightstatsm2loris.utils.Utils
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import com.google.android.gms.maps.model.LatLng
+import kotlinx.coroutines.*
 import org.json.JSONArray
 import org.json.JSONObject
 import java.util.*
@@ -23,6 +23,7 @@ class AircraftDetailViewModel : ViewModel(), RequestsManager.RequestListener {
     private val selectedAircraftLiveData: MutableLiveData<Aircraft> = MutableLiveData()
 
     val aircraftICAO: MutableLiveData<String> = MutableLiveData()
+    val aircraftCallSign: MutableLiveData<String> = MutableLiveData()
     val aircraftLastSeen: MutableLiveData<Long> = MutableLiveData()
     val aircraftEstDepartureAirport: MutableLiveData<String> = MutableLiveData()
     val aircraftEstArrivalAirport: MutableLiveData<String> = MutableLiveData()
@@ -31,7 +32,15 @@ class AircraftDetailViewModel : ViewModel(), RequestsManager.RequestListener {
 
     val aircraftFlightListLiveData: MutableLiveData<List<FlightModel>> = MutableLiveData()
 
+    private val airportListLiveData : MutableLiveData<List<Airport>> = MutableLiveData()
+    val areRoutesLoaded: MutableLiveData<Boolean> = MutableLiveData()
+    init {
+        airportListLiveData.value = Utils.generateAirportList()
+    }
 
+    val selectedFlightRouteCoordinates: MutableLiveData<HashMap<String, LatLng>> = MutableLiveData()
+    private val routeDepartureAirportCoords: MutableLiveData<LatLng> = MutableLiveData()
+    private val routeArrivalAirportCoords: MutableLiveData<LatLng> = MutableLiveData()
 
 
     override fun onRequestSuccess(result: String?) {
@@ -58,10 +67,10 @@ class AircraftDetailViewModel : ViewModel(), RequestsManager.RequestListener {
             } else {
 
                 if ((JSONObject(result)["states"])::class != JSONArray::class) {
-                    Log.e("Parsing aircraft data", "States are null, we should specify a time, now trying with last time seen")
+                    Log.e("Parsing aircraft data", "Aircraft is offline, states are null, we should specify a time, now trying with last time seen")
+                    isAircraftOnline.value = false
                     searchAircraftData(false)
                 } else {
-
                     // Pas très classe/safe comme façon de faire certes,
                     // je n'arrive pas à parser correctement avec des index
                     // (pas de key dans la réponse API)
@@ -108,6 +117,7 @@ class AircraftDetailViewModel : ViewModel(), RequestsManager.RequestListener {
 
                     selectedAircraftLiveData.value = newAircraft
                     searchAircraftFlights()
+                    searchAircraftCurrentFlightDetail()
                 }
             }
         }
@@ -122,8 +132,46 @@ class AircraftDetailViewModel : ViewModel(), RequestsManager.RequestListener {
         return params
     }
 
-    private fun searchAircraftFlightDetail() {
+    //On cherche le vol en cours de cet avion ou bien le dernier vol
+    private fun searchAircraftCurrentFlightDetail() {
+        val baseUrl = "https://opensky-network.org/api/routes"
 
+        viewModelScope.launch {
+            val result = withContext(Dispatchers.IO) {
+                RequestsManager.getSuspended(baseUrl, getAircraftCurrentFlightDetailParams())
+            }
+            if (result == null) {
+                Log.e("Request", "Empty flight route data.")
+                if (isAircraftOnline.value == false) {
+                    Log.i("Request", "Falling back on last flight data")
+                    searchRoutesForAirports(aircraftEstDepartureAirport.value, aircraftEstArrivalAirport.value)
+                }
+
+            } else {
+                val routes = JSONObject(result)["route"] as JSONArray?
+
+                if (routes == null) {
+                    Log.e("Request", "Route data for this flight is empty.")
+                } else {
+                    if (routes.length() == 2) {
+                        Log.i("Routes", "We have a correct routing $routes")
+                        val estDeparture = routes[0] as String
+                        val estArrival = routes[1] as String
+
+                        Log.i("Routes", "Departure $estDeparture, Arrival: $estArrival")
+                        searchRoutesForAirports(estDeparture, estArrival)
+                    }
+                }
+
+            }
+        }
+
+    }
+
+    private fun getAircraftCurrentFlightDetailParams(): Map<String, String> {
+        val params = HashMap<String, String>()
+        params["callsign"] = aircraftCallSign.value!!
+        return params
     }
 
     // On cherche enfin les derniers vols de cet avion sur 3 jours
@@ -165,11 +213,13 @@ class AircraftDetailViewModel : ViewModel(), RequestsManager.RequestListener {
 
 
 
-    fun updateSelectedFlightDataAndSearch(icao: String, lastSeen: Long, depAirport: String?, arrAirport: String?) {
+    fun updateSelectedFlightDataAndSearch(icao: String, callSign: String, lastSeen: Long, depAirport: String?, arrAirport: String?) {
         aircraftICAO.value = icao
+        aircraftCallSign.value = callSign
         aircraftLastSeen.value = lastSeen
         aircraftEstDepartureAirport.value = depAirport
         aircraftEstArrivalAirport.value = arrAirport
+        isAircraftOnline.value = true
         searchAircraftData(true)
     }
 
@@ -183,5 +233,84 @@ class AircraftDetailViewModel : ViewModel(), RequestsManager.RequestListener {
         }
         return false
     }
+
+
+    // Getting a airport detail
+
+    private fun searchRoutesForAirports(dep: String?, arr: String?) {
+
+        // We don't manage any missing airport data case
+        if (dep == null || arr == null) {
+            return
+        }
+
+        airportListLiveData.value!!.forEach {
+            if (it.icao == dep) {
+                Log.i("Airport finder", "Found departure airport coordinates")
+                routeDepartureAirportCoords.value = LatLng(it.lat.toDouble(), it.lon.toDouble())
+            }
+        }
+
+        if (routeDepartureAirportCoords.value == null) { return }
+
+        val baseUrl = "https://opensky-network.org/api/airports"
+        val params = HashMap<String, String>()
+        params["icao"] = dep
+
+        viewModelScope.launch {
+            var result = withContext(Dispatchers.IO) {
+                RequestsManager.getSuspended(baseUrl, params)
+            }
+            if (result == null) {
+                Log.e("Airport finder", "Could not find a airport with this ICAO")
+            } else {
+                val position = JSONObject(result)["position"] as JSONObject
+                val lat = position["latitude"] as Double
+                val lon = position["longitude"] as Double
+                Log.i("Airport finder", "Found departure airport coordinates")
+                routeDepartureAirportCoords.value = LatLng(lat, lon)
+
+                airportListLiveData.value!!.forEach {
+                    if (it.icao == arr) {
+                        Log.i("Airport finder", "Found arrival airport coordinates")
+                        routeArrivalAirportCoords.value = LatLng(it.lat.toDouble(), it.lon.toDouble())
+                        updateRouteCoords()
+                    }
+                }
+                if (routeArrivalAirportCoords.value == null) {
+                    val baseUrl = "https://opensky-network.org/api/airports"
+                    val params = HashMap<String, String>()
+                    params["icao"] = arr
+
+                    viewModelScope.launch {
+                        var result = withContext(Dispatchers.IO) {
+                            RequestsManager.getSuspended(baseUrl, params)
+                        }
+                        if (result == null) {
+                            Log.e("Airport finder", "Could not find a airport with this ICAO")
+                        } else {
+                            val position = JSONObject(result)["position"] as JSONObject
+                            val lat = position["latitude"] as Double
+                            val lon = position["longitude"] as Double
+                            Log.i("Airport finder", "Found arrival airport coordinates")
+                            routeArrivalAirportCoords.value = LatLng(lat, lon)
+                            updateRouteCoords()
+                        }
+                    }
+                }
+
+            }
+        }
+    }
+
+    private fun updateRouteCoords() {
+        val coords = HashMap<String, LatLng>()
+        coords["departure"] = routeDepartureAirportCoords.value!!
+        coords["arrival"] = routeArrivalAirportCoords.value!!
+        selectedFlightRouteCoordinates.value = coords
+        Log.i("Airport finder", "Found final coordinates for both dep and arr airports ${selectedFlightRouteCoordinates.value}")
+    }
+
+
 
 }
