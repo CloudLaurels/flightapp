@@ -8,9 +8,9 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import com.example.flightstatsm2loris.viewmodels.FlightListViewModel
 import com.example.flightstatsm2loris.R
 import com.example.flightstatsm2loris.utils.Utils
 import com.example.flightstatsm2loris.viewmodels.AircraftDetailViewModel
@@ -19,7 +19,8 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.model.*
-import kotlinx.android.synthetic.main.fragment_airplane_map_detail.*
+import java.util.*
+import kotlin.collections.ArrayList
 
 
 // TODO: Rename parameter arguments, choose names that match
@@ -32,6 +33,13 @@ class AircraftDetailMapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMa
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
+
+    val PATTERN_DASH_LENGTH_PX = 20
+    val PATTERN_GAP_LENGTH_PX = 20
+    val DOT: PatternItem = Dot()
+    val DASH: PatternItem = Dash(PATTERN_DASH_LENGTH_PX.toFloat())
+    val GAP: PatternItem = Gap(PATTERN_GAP_LENGTH_PX.toFloat())
+    val PATTERN_POLYGON_ALPHA: List<PatternItem> = Arrays.asList(GAP, DASH)
 
     private lateinit var viewModel: AircraftDetailViewModel
     private lateinit var mMapView: MapView
@@ -55,7 +63,11 @@ class AircraftDetailMapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMa
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-       val rootView: View = inflater.inflate(R.layout.fragment_airplane_map_detail, container, false)
+       val rootView: View = inflater.inflate(
+           R.layout.fragment_airplane_map_detail,
+           container,
+           false
+       )
 
         viewModel = ViewModelProvider(requireActivity()).get(AircraftDetailViewModel::class.java)
 
@@ -80,6 +92,8 @@ class AircraftDetailMapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMa
 
             }
     }
+
+
 
     override fun onMapReady(googleMap: GoogleMap) {
         myGoogleMap = googleMap
@@ -133,14 +147,26 @@ class AircraftDetailMapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMa
 
                     val poi = ArrayList<LatLng>()
                     val polyLineOptions = PolylineOptions()
-                    poi.add(airplaneLocation) //from
-                    poi.add(it1["arrival"]!!) // to
+                    poi.add(it1["departure"]!!) //from
+                    poi.add(airplaneLocation) // to
                     polyLineOptions.width(7f)
                     polyLineOptions.geodesic(true)
                     polyLineOptions.color(Color.YELLOW)
                     polyLineOptions.addAll(poi)
                     val polyline: Polyline = myGoogleMap.addPolyline(polyLineOptions)
                     polyline.isGeodesic = true
+
+
+                    val pois = ArrayList<LatLng>()
+                    pois.add(airplaneLocation) //from
+                    pois.add(it1["arrival"]!!) // to
+                    val polyOptions = PolylineOptions()
+                    polyOptions.color(Color.YELLOW)
+                    polyOptions.addAll(pois)
+                    polyOptions.pattern(PATTERN_POLYGON_ALPHA)
+                    val polyline1 = googleMap.addPolyline(polyOptions)
+                    polyline1.isGeodesic = true
+
 
                     if (!zoomed) {
                         zoomToFit(airplaneLocation, it1["arrival"]!!)

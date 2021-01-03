@@ -100,8 +100,8 @@ class FlightDetailMapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMapL
 
         myGoogleMap.clear()
 
-        val depIcon = Utils.generateSmallIcon(context!!, R.drawable.airplane)
-        val arrIcon = Utils.generateSmallIcon(context!!, R.drawable.airplane)
+        val depIcon = Utils.generateSmallIcon(context!!, R.drawable.departuretower)
+        val arrIcon = Utils.generateSmallIcon(context!!, R.drawable.arrivaltower)
 
         val poi = ArrayList<LatLng>()
         val polyLineOptions = PolylineOptions()
