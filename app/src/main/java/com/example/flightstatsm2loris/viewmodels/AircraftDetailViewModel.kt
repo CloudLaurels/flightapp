@@ -78,7 +78,7 @@ class AircraftDetailViewModel : ViewModel(), RequestsManager.RequestListener {
 
                     // Bien que l'api (https://opensky-network.org/apidoc/rest.html#all-state-vectors)
                     // précise que la plupart des propriétés sont des Floats, il arrive
-                    // qu'elle renvoie des Integers voire null de temps à autres ??????????
+                    // qu'elle renvoie des Integers de temps à autres ??????????
                     var vertRate = states[11]
                     if (vertRate::class == Int::class) {
                         vertRate = (vertRate as Int).toDouble()

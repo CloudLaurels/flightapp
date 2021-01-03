@@ -32,9 +32,10 @@ class MainActivity : AppCompatActivity() {
 
         val adapter: ArrayAdapter<String> = ArrayAdapter(
             this,
-            android.R.layout.simple_spinner_dropdown_item,
+            R.layout.myspinner_item,
             airportNamesList
         )
+
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
 
         spinner_airport.adapter = adapter
