@@ -6,6 +6,7 @@ import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.ViewModelProvider
 import com.example.flightstatsm2loris.R
 import com.example.flightstatsm2loris.fragments.FlightDetailMapFragment
+import com.example.flightstatsm2loris.utils.Utils
 import com.example.flightstatsm2loris.viewmodels.AircraftDetailViewModel
 import com.example.flightstatsm2loris.viewmodels.FlightListViewModel
 import kotlinx.android.synthetic.main.activity_flight_list.*
@@ -19,6 +20,8 @@ class AircraftInfoActivity: AppCompatActivity() {
         setContentView(R.layout.activity_aircraft_info)
 
         val isMobile = detail_container == null
+
+        Utils.isMobile.value = isMobile
 
         viewModel = ViewModelProvider(this).get(AircraftDetailViewModel::class.java)
 

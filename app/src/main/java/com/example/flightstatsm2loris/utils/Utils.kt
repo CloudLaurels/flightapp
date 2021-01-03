@@ -35,6 +35,8 @@ class Utils private constructor() {
 
         var liveData = MutableLiveData<String>()
 
+        var isMobile = MutableLiveData<Boolean>()
+
         fun updateLiveData(value: String) {
             android.os.Handler().postDelayed(Runnable {
                 Log.d("MAIN", "update of the value")

@@ -1,14 +1,16 @@
 package com.example.flightstatsm2loris.fragments
 
 
+import android.content.Context
 import android.content.res.Resources
 import android.graphics.Color
 import android.os.Bundle
+import android.telephony.TelephonyManager
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.flightstatsm2loris.R
@@ -70,8 +72,6 @@ class AircraftDetailMapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMa
        )
 
         viewModel = ViewModelProvider(requireActivity()).get(AircraftDetailViewModel::class.java)
-
-
 
         mMapView = rootView.findViewById(R.id.aircraftMapView) as MapView
         mMapView.onCreate(savedInstanceState)
@@ -193,7 +193,16 @@ class AircraftDetailMapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMa
     }
 
     private fun zoomToAirplane(pos: LatLng) {
-        myGoogleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(pos, 6F))
+        var padding = 6F
+
+        // C'est pas correct, il faut ajouter un padding Y pour que le marker
+        // n'apparaisse pas en dessous du fragment d'infos
+        if (Utils.isMobile.value == true) {
+            padding = 3F
+            Log.i("Mobile zoom", "We are on mobile")
+        }
+
+        myGoogleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(pos, padding))
         zoomed = true
     }
 
@@ -203,7 +212,18 @@ class AircraftDetailMapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMa
             .include(poi2) // LatLgn object2
             .build()
 
-        myGoogleMap.animateCamera(CameraUpdateFactory.newLatLngBounds(group, 400))
+        var padding = 400
+
+        // C'est pas correct, il faut ajouter un padding Y pour que le marker
+        // n'apparaisse pas en dessous du fragment d'infos
+        if (Utils.isMobile.value == true) {
+            padding = 700
+            Log.i("Mobile zoom", "We are on mobile")
+        }
+
+        myGoogleMap.animateCamera(CameraUpdateFactory.newLatLngBounds(group, padding))
         zoomed = true
     }
+
+
 }

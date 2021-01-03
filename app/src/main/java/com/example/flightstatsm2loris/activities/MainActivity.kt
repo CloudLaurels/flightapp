@@ -10,6 +10,7 @@ import android.widget.TextView
 import androidx.lifecycle.ViewModelProvider
 import com.example.flightstatsm2loris.viewmodels.MainViewModel
 import com.example.flightstatsm2loris.R
+import com.example.flightstatsm2loris.utils.Utils
 import kotlinx.android.synthetic.main.activity_main.*
 import java.text.SimpleDateFormat
 import java.util.*
@@ -51,6 +52,7 @@ class MainActivity : AppCompatActivity() {
         toDate.setOnClickListener { showDatePicker(toDate) }
 
         searchButton.setOnClickListener { search() }
+
     }
 
     private fun showDatePicker(clickedView: View) {

@@ -1,8 +1,25 @@
 # Flight Stats
 
+# Ecran 1
+
+![App flowchar](images/ecrans/ecran1.png)
 
 
+# Ecran 2
 
+![App flowchar](images/ecrans/ecran2.png)
+
+# Ecran 3
+
+![App flowchar](images/ecrans/ecran3.png)
+
+# Ecran 4 & 4bis
+
+![App flowchar](images/ecrans/ecran44bis.png)
+
+# Ecran additionnel
+
+![App flowchar](images/ecrans/ecranxtra.png)
 
 # Design original
 
