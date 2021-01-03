@@ -1,6 +1,6 @@
 # Flight Stats
 
-![](images/ecrans/main.gif)
+![](images/main.gif)
 
 # Ecran 1
 
