@@ -89,6 +89,8 @@ class AircraftDetailViewModel : ViewModel(), RequestsManager.RequestListener {
                         baroAltitude = (baroAltitude as Int).toDouble()
                     } else if (baroAltitude == null) {
                         baroAltitude = 0.0
+                    } else if (baroAltitude.toString() == "null") {
+                        baroAltitude = 0.0
                     }
 
                     var geoAltitude = states[13]
@@ -96,12 +98,16 @@ class AircraftDetailViewModel : ViewModel(), RequestsManager.RequestListener {
                         geoAltitude = (geoAltitude as Int).toDouble()
                     } else if (geoAltitude == null) {
                         geoAltitude = 0.0
+                    } else if (geoAltitude.toString() == "null") {
+                        geoAltitude = 0.0
                     }
 
                     var currOrientation = states[10]
                     if (currOrientation::class == Int::class) {
                         currOrientation = (currOrientation as Int).toDouble()
                     } else if (currOrientation == null) {
+                        currOrientation = 0.0
+                    } else if (currOrientation.toString() == "null") {
                         currOrientation = 0.0
                     }
 

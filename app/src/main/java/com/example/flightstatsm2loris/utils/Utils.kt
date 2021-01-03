@@ -226,15 +226,15 @@ class Utils private constructor() {
         }
 
         fun generateSmallIcon(context: Context, icon: Int): Bitmap {
-            val height = 100
-            val width = 100
+            val height = 70
+            val width = 53
             val bitmap = BitmapFactory.decodeResource(context.resources, icon)
             return Bitmap.createScaledBitmap(bitmap, width, height, false)
         }
 
         fun generateMediumIcon(context: Context, icon: Int): Bitmap {
-            val height = 200
-            val width = 200
+            val height = 100
+            val width = 100
             val bitmap = BitmapFactory.decodeResource(context.resources, icon)
             return Bitmap.createScaledBitmap(bitmap, width, height, false)
         }

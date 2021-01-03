@@ -55,10 +55,14 @@ class AircraftFlightListFragment : Fragment(){
             if (it) {
                 progressBar.visibility = View.VISIBLE
                 errorText.visibility = View.INVISIBLE
+                errorText1.visibility = View.INVISIBLE
+                errorImage.visibility = View.INVISIBLE
             } else {
                 progressBar.visibility = View.INVISIBLE
                 if (viewModel.aircraftFlightListLiveData.value == null) {
                     errorText.visibility = View.VISIBLE
+                    errorText1.visibility = View.VISIBLE
+                    errorImage.visibility = View.VISIBLE
                 }
             }
         })

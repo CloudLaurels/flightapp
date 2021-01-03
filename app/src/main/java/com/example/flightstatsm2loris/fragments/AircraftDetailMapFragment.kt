@@ -111,7 +111,7 @@ class AircraftDetailMapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMa
         }
 
         viewModel.getCurrentAircraftData().observe(this, {
-            val airplaneIcon = Utils.generateSmallIcon(context!!, R.drawable.airplane)
+            val airplaneIcon = Utils.generateMediumIcon(context!!, R.drawable.airplane)
             Log.i("Rotation check", it.currentOrientation.toString())
             if (it.latitude != null && it.longitude != null) {
 
@@ -123,6 +123,7 @@ class AircraftDetailMapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMa
                         .icon(BitmapDescriptorFactory.fromBitmap(airplaneIcon))
                         .anchor(0.5f, 0.5f)
                         .rotation(it.currentOrientation!!.toFloat())
+                        .zIndex(999F)
                 )
 
                 viewModel.selectedFlightRouteCoordinates.observe(this, { it1 ->
