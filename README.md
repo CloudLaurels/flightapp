@@ -1,5 +1,7 @@
 # Flight Stats
 
+![](images/ecrans/main.gif)
+
 # Ecran 1
 
 ![App flowchar](images/ecrans/ecran1.png)
